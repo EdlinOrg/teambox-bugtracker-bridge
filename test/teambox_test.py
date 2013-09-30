@@ -6,10 +6,27 @@ import teambox
 
 #export PYTHONPATH="../src:$PYTHONPATH"
 
+
 class TeamboxTest(unittest.TestCase):
 
     def setUp(self):
         self.obj = teambox.Teambox()
+
+    def test_prepareComment(self):
+        url = 'https://teambox.com/#!/search/mt%3A'
+
+        arr = {'text' : 'apa', 'reporter' : {'name' : 'dilbert'} }
+        self.assertEqual("dilbert:\napa", self.obj.prepareComment( arr ) )
+
+        arr = {'text' : 'apa #34 bepa', 'reporter' : {'name' : 'dilbert'} }
+        expected = 'dilbert:\napa #34 (' + url + '34) bepa'
+        self.assertEqual(expected, self.obj.prepareComment( arr ) )
+
+        arr = {'text' : '#12a', 'reporter' : {'name' : 'dilbert'} }
+        self.assertEqual('dilbert:\n#12a', self.obj.prepareComment( arr ) )
+
+#    def test_deleteComment(self):
+#        self.obj.deleteComment('17301353')
 
 #    def test_getTeamboxImportedTasks(self):
 #        self.obj.getTeamboxImportedTasks()
@@ -23,10 +40,11 @@ class TeamboxTest(unittest.TestCase):
 #        print data
 
 #    def test_moveToResolved(self):
-#        self.obj.moveToResolved(4919082)
+#        self.obj.moveToResolved(4918910)
 
 #    def test_fetchComments(self):
-#        data = self.obj.fetchComments(4911022)
+#        data = self.obj.fetchComments(5512872)
+#        print data
 #        for i, v in enumerate( data['objects'] ):
 #            print 'INDENT:', json.dumps(v, sort_keys=True, indent=2)
 
@@ -36,4 +54,3 @@ class TeamboxTest(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-

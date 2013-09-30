@@ -12,6 +12,7 @@ import config
 #logging.getLogger('suds.xsd.schema').setLevel(logging.DEBUG)
 #logging.getLogger('suds.wsdl').setLevel(logging.DEBUG)
 
+
 class MantisSoap():
 
     def __init__(self):
@@ -21,11 +22,11 @@ class MantisSoap():
         self.username = config.MANTIS_USERNAME
         self.password = config.MANTIS_PASSWORD
 
-        self.server = Client(url=self.wdsl, location=self.url).service;
+        self.server = Client(url=self.wdsl, location=self.url).service
 
-        self.cached_mantis_obj=False
+        self.cached_mantis_obj = False
 
-    def extractTeamboxIdFromNote(self,str):
+    def extractTeamboxIdFromNote(self, str):
         """ Extract the teambox id from the string
             Looks for (tb comment id:NNN+} at the beginning of the string
 
@@ -68,28 +69,34 @@ class MantisSoap():
                 l.append( int(teambox_id) )
             else:
                 a.append(aComment)
-        return (l,a)
+        return (l, a)
 
     def getTask(self, mantis_id):
         if self.cached_mantis_obj and self.cached_mantis_obj['id'] == mantis_id:
             return self.cached_mantis_obj
         else:
-            self.cached_mantis_obj = self.server.mc_issue_get( self.username, self.password, mantis_id ) 
+            self.cached_mantis_obj = self.server.mc_issue_get( self.username, self.password, mantis_id )
         return self.cached_mantis_obj
 
     def addNoteToTask(self, task_id, note):
         data = { 'text' : note }
-        self.server.mc_issue_note_add( self.username, self.password, task_id, data ) 
+        self.server.mc_issue_note_add( self.username, self.password, task_id, data )
 
     def createTask(self, task):
-        newid = self.server.mc_issue_add(username=self.username, password=self.password, issue=task)        
+        newid = self.server.mc_issue_add(username=self.username, password=self.password, issue=task)
         print "Success: issue %s created" % newid
         return newid
 
     def updateTask(self, issue_id, task):
-        self.server.mc_issue_update(username=self.username, password=self.password, issueId= issue_id, issue=task)        
+        self.server.mc_issue_update(username=self.username, password=self.password, issueId=issue_id, issue=task)
 
     def isSolved(self, issue_id):
         #80 = resolved
         task = self.getTask(issue_id)
         return task['status']['id'] == 80
+
+    def setStatusToNew(self, issue_id):
+        #10 = new
+        task = self.getTask(issue_id)
+        task['status']['id'] = 10
+        self.updateTask(issue_id, task)

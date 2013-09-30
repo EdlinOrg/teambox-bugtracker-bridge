@@ -2,6 +2,7 @@ import unittest
 
 import mantis_soap
 
+
 class MantisSoapTest(unittest.TestCase):
 
     def setUp(self):
@@ -29,8 +30,15 @@ class MantisSoapTest(unittest.TestCase):
 #         print self.obj.isSolved(82)
 
 #    def test_getTaskNotesTeamboxIds(self):
-#        data = self.obj.getTaskNotesTeamboxIds(82)
+#        data = self.obj.getTaskNotesTeamboxIds(92)
 #        print data
+
+#    def test_getTaskNotes(self):
+#        data = self.obj.getTaskNotes(92)
+#        print data
+
+    def test_setStatusToNew(self):
+        self.obj.setStatusToNew(94)
 
 #    def test_extractTeamboxIdFromNote(self):
 #        self.assertEqual(False,self.obj.extractTeamboxIdFromNote('Apa bepa cepa') )
@@ -39,4 +47,3 @@ class MantisSoapTest(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-
