@@ -11,15 +11,19 @@ import config
 
 class Teambox():
 
-    def __init__(self):
+    def __init__(self, tasklist_id):
+
+        self.teambox_tasklist_bugs = tasklist_id
+
         self.teambox_projectid = config.TEAMBOX_PROJECTID
-        self.teambox_tasklist_bugs = config.TEAMBOX_TASKLIST_ID
         self.teambox_tasklist_fixed = config.TEAMBOX_TASKLIST_FIXED_ID
 
         self.baseUrl = config.TEAMBOX_BASEURL
         self.baseUrl2 = config.TEAMBOX_BASEURL2
         self.teambox_username = config.TEAMBOX_USERNAME
         self.teambox_password = config.TEAMBOX_PASSWORD
+
+        self.cached_users = {}
 
     def connectionHelperGet(self, urlPart):
         # TODO: oauth2
@@ -51,7 +55,7 @@ class Teambox():
         data = response.read()
         return data
 
-    def connectionHelperApi2(self, urlPart, args, requestType):
+    def connectionHelperApi2(self, urlPart, args={}, requestType='GET'):
         # TODO: oauth2
 
         if not 'GET' == requestType:
@@ -62,6 +66,8 @@ class Teambox():
             request = urllib2.Request(self.baseUrl2 + urlPart, enc_args )
         else:
             request = urllib2.Request(self.baseUrl2 + urlPart )
+
+        # print self.baseUrl2 + urlPart
 
         base64string = base64.encodestring('%s:%s' % (self.teambox_username, self.teambox_password)).replace('\n', '')
         request.add_header("Authorization", "Basic %s" % base64string)
@@ -102,26 +108,41 @@ class Teambox():
         data = { 'task_ids': taskId }
         return self.connectionHelperApi2(urlPart, data, 'PUT')
 
-    def createComment(self, taskId, comment):
-        args = { 'body': comment, 'project_id' : self.teambox_projectid }
-        urlPart = 'tasks/' + taskId + '/comments#create'
-        return self.connectionHelperPost(urlPart, args, False)
-
     def printTask(self, task):
         print "-----------------------------------"
         print "Id:\t\t" + str(task['id'])
         print "name:\t\t" + task['name']
         print "updated_at:\t" + task['updated_at']
 
-    def prepareComment(self, aComment):
-        str = aComment['text']
-        url = 'https://teambox.com/#!/search/mt%3A'
-        str = re.sub(r'#(\d+)(?!\w)' , r'#\1 (' + url + r'\1)', str)
+    def createComment(self, taskId, comment):
+        args = { 'body': comment, 'project_id' : self.teambox_projectid }
+        urlPart = 'tasks/' + taskId + '/comments#create'
+        return self.connectionHelperPost(urlPart, args, False)
 
-        #add name of reporter first
-        str = aComment['reporter']['name'] + ":\n" + str
-        return str
+    def updateComment(self, commentId, text):
+        args = {
+                'body': text
+                }
+
+        urlPart = 'comments/' + str( commentId )
+        self.connectionHelperApi2(urlPart, args, 'PUT')
 
     def deleteComment(self, id):
         urlPart = 'projects/' + self.teambox_projectid + '/comments/' + str( id )
         self.connectionHelperApi2(urlPart, {}, 'DELETE')
+
+    def prepareComment(self, aComment):
+        str = aComment['text']
+        url = 'https://teambox.com/#!/search/mt%3A'
+        str = re.sub(r'#(\d+)(?!\w)' , r'#\1 (' + url + r'\1)', str)
+        return str
+
+    def getUser(self, id):
+        if id in self.cached_users:
+            return self.cached_users[id]
+
+        urlPart = 'users/' + str( id )
+        data = self.connectionHelperApi2(urlPart)
+        ret = json.loads(data)
+        self.cached_users[id] = ret
+        return ret
