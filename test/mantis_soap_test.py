@@ -34,11 +34,21 @@ class MantisSoapTest(unittest.TestCase):
 #        print data
 
 #    def test_getTaskNotes(self):
-#        data = self.obj.getTaskNotes(92)
-#        print data
+#        (teambox_ids_in_mantis, tasks) = self.obj.getTaskNotes(105)
+#        aTask = tasks[0]
+#        print aTask
+#        print self.obj.extractUserInfoFromNote( aTask )
 
-    def test_setStatusToNew(self):
-        self.obj.setStatusToNew(94)
+    def test_getTaskNoteByNoteId(self):
+        aTask = self.obj.getTaskNoteByNoteId(105, 999)
+        self.assertFalse( aTask )
+
+        aTask = self.obj.getTaskNoteByNoteId(105, 210)
+        print aTask
+#        print self.obj.extractUserInfoFromNote( aTask )
+
+#    def test_setStatusToNew(self):
+#        self.obj.setStatusToNew(94)
 
 #    def test_extractTeamboxIdFromNote(self):
 #        self.assertEqual(False,self.obj.extractTeamboxIdFromNote('Apa bepa cepa') )
