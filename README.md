@@ -28,11 +28,22 @@ The files:
 * teambox.py     - the interface to Teambox, uses their REST interface
 * mantis_soap.py - the interface to Mantis, uses the SOAP interface mantisconnect
 
+The Teambox project id in the config file should ideally be the "real" (integer) id,
+if you enter the shorten string (e.g. copied from the url), the bridge will automatically
+lookup what the real id is. (I.e. will be one extra http request if you do not enter the integer id).
+In the output from the bridge you will see that id so you can enter it in your config file.
+
 It is recommended that you setup one virtual user in Teambox and one virtual user in Mantis
-that are the users defined in config.py.
+that are the users defined in config.py, and name the user in Teambox "mantis" and the user in Mantis "teambox", 
+so you quickly can see tasks / comments that were automatically transferred.
 
 The tasks will then be created as these virtual users and it is obvious that it was not a "real" user that created the tasks / notes.
 
+Also, in Teambox you need to change the setting so that comments can be edited after 15 minutes in
+Manage Organizations/Your Organization/General and Security Settings.
+
+If you do not do this, it is not possible to update the comments automatically (i.e. when someone edited a note in Mantis it cannot be
+synchronized to Teambox).
 
 The websites for Teambox & Mantis:
 
@@ -51,11 +62,13 @@ When a task has been transferred to mantis, the title of the Teambox task is pre
 where XXXXX is the id of the corresponding task in Mantis
 
 For each comment that has been transferred to/from Mantis, the comment in Teambox is prepended with
+
 "(mt:XXXXX, YYYY - hash:ZZZ)"
 
 where
-* XXXX is the id of the correpsonding note in Mantis
-* AAAA is the name of the user in Mantis (either fullname, or not available, the username)
+
+* XXXXX is the id of the correpsonding note in Mantis
+* YYYY is the name of the user in Mantis (either fullname, or not available, the username)
 * ZZZ is the a calculated hash of the text in mantis. This hash is used to determine if a note has been updated
 
 When a task is marked as completed in mantis, a comment is added to that task in Teambox, with the content
@@ -68,9 +81,11 @@ the teambox id is saved as "(tb:XXXXX, YYYY)" where XXXXX is the Teambox id
 and YYYY is the users name in Teambox
 
 Comments that were synchronized from Teambox:
+
 The Mantis "Note" start with "(tb:XXXXX, YYYY - hash:ZZZ)"
 
 where
+
 * XXXXX is the corresponding comment id in Teambox
 * YYYY is the users name in Teambox
 * ZZZ is the a calculated hash of the text in mantis. This hash is used to determine if a note has been updated
@@ -83,3 +98,5 @@ Misc notes
 * If a title was changed in Mantis, it will be overwritten with the task title from Teambox with next sync
 * If the pattern " #DDD " (where DDD are any amount of digits) is found in a Mantis note, it is assumed to be a reference to a different
 Mantis task, and we will create an url in Teambox which searches Teambox for this task using the searchquery "mt:DDD"
+
+

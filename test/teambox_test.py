@@ -11,7 +11,7 @@ import teambox
 class TeamboxTest(unittest.TestCase):
 
     def setUp(self):
-        self.obj = teambox.Teambox()
+        self.obj = teambox.Teambox(1377307)
 
 #    def test_prepareComment(self):
 #        url = 'https://teambox.com/#!/search/mt%3A'
@@ -43,15 +43,30 @@ class TeamboxTest(unittest.TestCase):
 #    def test_moveToResolved(self):
 #        self.obj.moveToResolved(4918910)
 
-    def test_fetchComments(self):
-        data = self.obj.fetchComments(5372110)
-        print data
-        for i, v in enumerate( data['objects'] ):
-            print 'INDENT:', json.dumps(v, sort_keys=True, indent=2)
 
-    def test_updateComment(self):
-        self.obj.updateComment(16953889, 'UPdateekj')
-        #16953889
+    def test_isInt(self):
+        self.assertTrue( self.obj.isInt('123') )
+        self.assertFalse( self.obj.isInt('123-e') )
+
+    def test_ensureRealProjectId(self):
+        print self.obj.teambox_projectid
+        self.obj.ensureRealProjectId()
+        print self.obj.teambox_projectid
+
+
+#    def test_fetchComments(self):
+#        data = self.obj.fetchComments(5372110)
+#        print data
+#        for i, v in enumerate( data['objects'] ):
+#            print 'INDENT:', json.dumps(v, sort_keys=True, indent=2)
+
+#    def test_updateComment(self):
+#        self.obj.updateComment(16953889, 'aoaoaoaoaooaoaoaoo')
+#        #16953889
+
+#    def test_getProjectDetail(self):
+#        data = self.obj.getProjectDetail( 'my-test-company-b7x43' )
+#        print data
 
 #    def test_fetchTasks(self):
 #        data = self.obj.fetchTasks()

@@ -25,6 +25,8 @@ class Teambox():
 
         self.cached_users = {}
 
+        self.ensureRealProjectId()
+
     def connectionHelperGet(self, urlPart):
         # TODO: oauth2
         request = urllib2.Request(self.baseUrl + urlPart )
@@ -82,6 +84,11 @@ class Teambox():
 
         data = response.read()
         return data
+
+    def getProjectDetail(self, project_id):
+        data = self.connectionHelperApi2('projects/' + project_id)
+        ret = json.loads(data)
+        return ret
 
     def fetchTasks(self):
         data = self.connectionHelperGet('projects/' + self.teambox_projectid + '/task_lists/' + self.teambox_tasklist_bugs + '/tasks')
@@ -146,3 +153,20 @@ class Teambox():
         ret = json.loads(data)
         self.cached_users[id] = ret
         return ret
+
+    def ensureRealProjectId(self):
+        if not self.isInt( self.teambox_projectid ):
+            print "Teambox project id in config is not an integer, will lookup real project id"
+            data = self.getProjectDetail( self.teambox_projectid )
+            self.teambox_projectid = str( data['id'] )
+            if not self.isInt( self.teambox_projectid ):
+                raise ValueError('Bridge failed to get real project id')
+            else:
+                print "Real project id is: " + self.teambox_projectid + ", enter that in your config"
+
+    def isInt(self, s):
+        try:
+            int(s)
+            return True
+        except ValueError:
+            return False
